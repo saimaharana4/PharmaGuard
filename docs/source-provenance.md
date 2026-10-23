@@ -19,8 +19,10 @@ The GitHub commit identifier differs because this is a new repository with one i
 snapshot commit. GitLab history, branches and tags were not imported. Live cloud resources
 and the GitLab project were not modified by this export.
 
-Recordings, local caches, generated reports, evaluation snapshots, raw corpora, model
+Raw recordings, local caches, generated reports, evaluation snapshots, raw corpora, model
 weights, credentials, Terraform state and the original GCP transcript are not included.
+The final public edited demo was subsequently archived under `docs/media/`, with a cover,
+checksum and README links. That documentation addition does not change application code.
 Public deployment identifiers retained in the existing documentation are configuration
 references, not credentials. Runtime secrets must be supplied through authorized Secret
 Manager access as described in the setup guide.

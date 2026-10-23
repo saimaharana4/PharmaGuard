@@ -24,3 +24,6 @@ config/bootstrap.local.json
 **/.terraform
 **/*.tfstate*
 **/*.tfplan
+
+# Public demo media is documentation, not a cloud build input.
+docs/media/

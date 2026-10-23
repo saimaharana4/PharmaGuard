@@ -11,6 +11,22 @@
 > does not configure GitHub Actions or deploy any service. See
 > [source provenance](docs/source-provenance.md) for the snapshot boundaries.
 
+## Recorded demo
+
+[![PharmaGuard demo: traceable drug-safety evidence](docs/media/pharmaguard-demo-cover.png)](https://youtu.be/J2ItTcts2ek)
+
+**[Watch on YouTube](https://youtu.be/J2ItTcts2ek)** ·
+**[Download the archived MP4](https://github.com/saimaharana4/PharmaGuard/raw/refs/heads/main/docs/media/pharmaguard-demo.mp4)**
+
+The complete narrated demo is also stored in this repository, so the recording remains
+available independently of the Google Cloud environment. It shows the application,
+GitLab Duo's retrieval repair, validation evidence and the Google Cloud service view.
+The archive preserves the existing 3:04 recording without re-editing it. It documents
+the recorded workflow; current deployment availability is a separate check.
+See [recording details and checksum](docs/media/README.md).
+
+## Overview
+
 **An evidence-grounded drug-safety workspace with supervised AI release gates.**
 
 PharmaGuard combines real adverse-event reports, archived drug labels, and biomedical

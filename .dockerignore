@@ -21,3 +21,6 @@ config/bootstrap.local.json
 **/*.tfstate*
 **/*.tfplan
 sca-artifacts
+
+# Public demo media is documentation, not a runtime image input.
+docs/media/

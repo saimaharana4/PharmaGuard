@@ -44,3 +44,6 @@ crash.log
 *.webm
 *.m4v
 *.bak
+
+# Explicitly archive the final public demo; keep raw recordings ignored.
+!docs/media/pharmaguard-demo.mp4
