@@ -1,0 +1,105 @@
+services:
+  postgres:
+    image: postgres:15-bookworm
+    user: "999:999"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      POSTGRES_DB: ${DB_NAME:-pharmaguard}
+      POSTGRES_USER: ${DB_USER:-pharmaguard_app}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Use infra/run_compose.py to load Secret Manager credentials}
+    ports: ["127.0.0.1:${POSTGRES_PORT:-5432}:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  qdrant:
+    image: qdrant/qdrant:v1.19.0
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    ports: ["127.0.0.1:${QDRANT_PORT:-6333}:6333"]
+    volumes: ["qdrant-data:/qdrant/storage"]
+    healthcheck:
+      test: ["CMD", "bash", "-ec", "exec 3<>/dev/tcp/127.0.0.1/6333; printf 'GET /healthz HTTP/1.0\\r\\nHost: localhost\\r\\n\\r\\n' >&3; read -r line <&3; [[ $$line == *' 200 '* ]]"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  migrate:
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    # One-shot migration exits successfully; it does not run an HTTP service.
+    healthcheck:
+      disable: true
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      APP_CONFIG_SECRET: ${APP_CONFIG_SECRET:?Use the Secret Manager Compose launcher}
+      GOOGLE_APPLICATION_CREDENTIALS: /run/google/adc.json
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-pharmaguard}
+      QDRANT_URL: http://qdrant:6333
+    volumes: ["${ADC_PATH:?ADC required}:/run/google/adc.json:ro"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["alembic", "upgrade", "head"]
+  api:
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      APP_CONFIG_SECRET: ${APP_CONFIG_SECRET:?Use the Secret Manager Compose launcher}
+      GOOGLE_APPLICATION_CREDENTIALS: /run/google/adc.json
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-pharmaguard}
+      QDRANT_URL: http://qdrant:6333
+      QDRANT_COLLECTION: ${QDRANT_COLLECTION:-pharmaguard_evidence_v1}
+      GIT_SHA: ${GIT_SHA:-development}
+      PORT: 8080
+      OMP_NUM_THREADS: 2
+      MKL_NUM_THREADS: 2
+      HF_HUB_OFFLINE: 1
+      PRELOAD_MODELS: "true"
+    volumes: ["${ADC_PATH:?ADC required}:/run/google/adc.json:ro"]
+    ports: ["127.0.0.1:8000:8080"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      start_period: 30s
+      retries: 20
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      qdrant:
+        condition: service_healthy
+  web:
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      API_INTERNAL_URL: http://api:8080
+      API_AUTH_MODE: local
+      PORT: 8080
+    ports: ["127.0.0.1:3000:8080"]
+    healthcheck:
+      test: ["CMD", "/nodejs/bin/node", "-e", "const r=require('http').get('http://127.0.0.1:8080/api/health',s=>{s.resume();process.exit(s.statusCode===200?0:1)});r.setTimeout(3000,()=>{r.destroy();process.exit(1)});r.on('error',()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 10
+    depends_on:
+      api:
+        condition: service_healthy
+volumes:
+  postgres-data:
+  qdrant-data:

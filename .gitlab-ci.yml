@@ -1,0 +1,23 @@
+# Gate order is authoritative; deployment cannot bypass quality/security/RAG.
+stages: [validate, test, secure, security_policy, rag_eval, infrastructure_plan, package, image_verify, image_policy, infrastructure_apply, deploy_staging, postdeploy, govern]
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/SAST-IaC.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.v2.gitlab-ci.yml
+    inputs:
+      stage: secure
+      allow_failure: false
+      resolution_jobs_allow_failure: false
+      max_scan_depth: 5
+  - local: .gitlab/ci/base.yml
+  - local: .gitlab/ci/validation.yml
+  - local: .gitlab/ci/security.yml
+  - local: .gitlab/ci/native-security.yml
+  - local: .gitlab/ci/evaluation.yml
+  - local: .gitlab/ci/package.yml
+  - local: .gitlab/ci/terraform.yml
+  - local: .gitlab/ci/cloud-run.yml
+  - local: .gitlab/ci/vm.yml
+  - local: .gitlab/ci/governance.yml

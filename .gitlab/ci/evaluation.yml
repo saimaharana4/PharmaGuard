@@ -1,0 +1,35 @@
+rag_eval:
+  extends: .python
+  image: $EVAL_RUNTIME_IMAGE
+  tags: [saas-linux-large-amd64]
+  before_script:
+    - unset CLOUD_SQL_CONNECTION_NAME
+    - uv sync --frozen --extra embeddings
+  stage: rag_eval
+  services:
+    - name: $EVAL_DATABASE_IMAGE
+      alias: postgres
+    - name: qdrant/qdrant:v1.19.0
+      alias: qdrant
+  variables:
+    DB_HOST: postgres
+    POSTGRES_HOST_AUTH_METHOD: trust
+    UV_PROJECT_ENVIRONMENT: /opt/evaluation-venv
+    HF_HUB_OFFLINE: "1"
+    OMP_NUM_THREADS: "2"
+    MKL_NUM_THREADS: "2"
+  script:
+    - uv run python ci/check_evaluation_inputs.py
+    - uv run python ci/wait_services.py
+    - uv run alembic upgrade head
+    - uv run python ci/fetch_snapshot.py
+    - uv run pharmaguard-eval run .data/evaluation/snapshot.zip --prepared-data --expected-sha256 "$EVAL_SNAPSHOT_SHA256" --embedding-inputs .data/evaluation/articles.json.gz --embedding-sha256 "$EVAL_EMBEDDING_SHA256" --workers 4
+    - uv run python -m ci.test_reports evaluation/report.json evaluation/junit.xml
+  after_script:
+    # Preserve the evaluator's exit status, while exposing failed measured checks too.
+    - if [ -f evaluation/report.json ] && [ ! -f evaluation/junit.xml ]; then uv run python -m ci.test_reports evaluation/report.json evaluation/junit.xml; fi
+  artifacts:
+    when: always
+    paths: [evaluation/report.json, evaluation/junit.xml]
+    reports:
+      junit: evaluation/junit.xml

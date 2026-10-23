@@ -1,0 +1,65 @@
+deploy:vm:
+  extends: .gcp
+  stage: deploy_staging
+  needs: ["terraform:apply", "package:images"]
+  resource_group: hackathon-vm-release
+  script:
+    - bash ci/migrate.sh
+    - bash ci/deploy_vm.sh
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && $DEPLOY_TARGET == "vm"'
+  environment:
+    name: staging-vm
+    url: https://pharmaguard-vm-preview-dfthmgvvaa-el.a.run.app
+    deployment_tier: staging
+  artifacts:
+    when: always
+    paths: [deployment/]
+    access: maintainer
+
+postdeploy:vm:
+  extends: .gcp:python
+  stage: postdeploy
+  needs: ["deploy:vm", "package:images"]
+  script:
+    - mkdir -p deployment
+    - python3 -m ci.vm_readiness
+    - bash ci/preview_vm_edge.sh
+    - PREVIEW_URL=$(gcloud run services describe pharmaguard-vm-preview --project="$GCP_PROJECT_ID" --region="$GCP_REGION" --format='value(status.url)')
+    - WEB_URL="$PREVIEW_URL" python3 -m ci.verify_served_source
+    - WEB_URL="$PREVIEW_URL" uv run python ci/postdeploy_smoke.py
+    - python3 -m ci.protect_production after
+    - python3 ci/release_evidence.py
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && $DEPLOY_TARGET == "vm"'
+  artifacts:
+    when: always
+    paths: [deployment/vm-ready.json, deployment/vm-version.json, deployment/edge-version.json, deployment/release-evidence.json, postdeploy-report.json]
+
+# Public traffic stays on the existing verified revision until human approval.
+promote:vm-edge:
+  extends: .gcp
+  stage: govern
+  needs: ["postdeploy:vm", "package:images"]
+  when: manual
+  allow_failure: false
+  resource_group: hackathon-vm-release
+  script:
+    - bash ci/promote_vm_edge.sh
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && $DEPLOY_TARGET == "vm"'
+  environment:
+    name: production
+    url: $WEB_URL
+    deployment_tier: production
+
+postdeploy:vm-public:
+  extends: .python
+  stage: govern
+  needs: ["promote:vm-edge"]
+  script: ["python3 -m ci.verify_served_source", "uv run python ci/postdeploy_smoke.py"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && $DEPLOY_TARGET == "vm"'
+  artifacts:
+    when: always
+    paths: [deployment/edge-version.json, postdeploy-report.json]

@@ -1,0 +1,14 @@
+govern:release:
+  image: alpine:3.22
+  stage: govern
+  needs:
+    - job: postdeploy:smoke
+      optional: true
+    - job: postdeploy:vm-public
+      optional: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: manual
+  allow_failure: false
+  script:
+    - echo "Human approval recorded for the staging artifact at $CI_COMMIT_SHA. Production promotion remains a separate human action."

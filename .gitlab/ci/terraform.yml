@@ -1,0 +1,62 @@
+validate:terraform:
+  image:
+    name: hashicorp/terraform:1.16.6
+    entrypoint: [""]
+  stage: validate
+  script:
+    - terraform fmt -check -recursive infra/terraform
+    - terraform -chdir=infra/terraform/environments/production init -backend=false -lockfile=readonly
+    - terraform -chdir=infra/terraform/environments/production validate
+
+.terraform:gcp:
+  extends: .gcp
+  before_script:
+    - source ci/auth_gcp.sh
+    - trap 'rm -rf "$AUTH_DIR"' EXIT
+    - bash ci/install_terraform.sh
+    - terraform -chdir=infra/terraform/environments/production init -lockfile=readonly -backend-config="bucket=$TF_STATE_BUCKET" -backend-config="prefix=hackathon/application-vm"
+  variables:
+    TF_IN_AUTOMATION: "true"
+    TF_VAR_project_id: "$GCP_PROJECT_ID"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && $DEPLOY_TARGET == "vm"'
+
+terraform:plan:
+  extends: .terraform:gcp
+  stage: infrastructure_plan
+  script:
+    - mkdir -p deployment
+    - terraform -chdir=infra/terraform/environments/production plan -out=../../../../deployment/vm.tfplan
+    - terraform -chdir=infra/terraform/environments/production show -json ../../../../deployment/vm.tfplan > deployment/terraform-plan.json
+    - python3 ci/terraform_policy.py deployment/terraform-plan.json deployment/terraform-summary.json
+  artifacts:
+    access: maintainer
+    expire_in: 1 day
+    paths: [deployment/vm.tfplan, deployment/terraform-plan.json, deployment/terraform-summary.json]
+
+terraform:apply:
+  extends: .terraform:gcp
+  stage: infrastructure_apply
+  needs: ["terraform:plan", "package:images", "security:container-policy"]
+  when: manual
+  allow_failure: false
+  resource_group: hackathon-infrastructure
+  script:
+    - python3 ci/terraform_policy.py deployment/terraform-plan.json deployment/terraform-summary.json
+    - terraform -chdir=infra/terraform/environments/production apply -input=false ../../../../deployment/vm.tfplan
+    - terraform -chdir=infra/terraform/environments/production output -json > deployment/terraform-outputs.json
+  artifacts:
+    paths: [deployment/terraform-summary.json, deployment/terraform-outputs.json]
+
+# Publish only policy-checked resource addresses/actions for release review.
+# Full plans retain their existing maintainer-only access restriction.
+terraform:evidence:
+  image: python:3.12-slim-bookworm
+  stage: infrastructure_plan
+  needs: ["terraform:plan"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && $DEPLOY_TARGET == "vm"'
+  script:
+    - python3 ci/terraform_policy.py deployment/terraform-plan.json deployment/terraform-summary.json
+  artifacts:
+    paths: [deployment/terraform-summary.json]

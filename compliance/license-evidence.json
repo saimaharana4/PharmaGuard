@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "purpose": "Exact-version registry declarations; not legal approval or a project license override",
+  "records": [
+    {
+      "ecosystem": "npm",
+      "name": "@oxc-project/types",
+      "version": "0.154.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40oxc-project%2Ftypes/0.154.0",
+      "metadata_sha256": "ac632e10ddd7e28a6f025872ad005c89a222383afb2e87b04c2759fb067e5b80",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.android-arm64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.android-arm64/12.14.0",
+      "metadata_sha256": "e132409195d243d6974c9b2d2d0e1ea8992d0471d4a8d27758668b1f23cb238b",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.android-x64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.android-x64/12.14.0",
+      "metadata_sha256": "f445993fde38f5c6a4379ba0d75f3041fb1986d6b1f25a6bbc0af33019d0b123",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.darwin-arm64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.darwin-arm64/12.14.0",
+      "metadata_sha256": "dc1ca4fd0befa19a7c8ffec11941dc64e1ed77253bbe29545a04579cc96f7284",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.darwin-x64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.darwin-x64/12.14.0",
+      "metadata_sha256": "1ce199ac917acef7c013cf978fa74b4209356578c9d744e5e26ce387556c34f7",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.freebsd-x64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.freebsd-x64/12.14.0",
+      "metadata_sha256": "7da294058751814a34afbcc62a5c46a9bd7689fbe1a857b636d4dc93e1005c01",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.linux-arm64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.linux-arm64/12.14.0",
+      "metadata_sha256": "f64ab5e41fe15ae2f5a72750fa467fdf1e1ec37ce5e431d6780d1d6643f76b40",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.linux-arm64-musl",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.linux-arm64-musl/12.14.0",
+      "metadata_sha256": "b57dc8b096a07c188129f4a4dbe5d7dbe4b33802b845173f69896de7871484bc",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.linux-ppc64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.linux-ppc64/12.14.0",
+      "metadata_sha256": "0a0e4d1adeca0745175d720eb18b63ca22e09f4507a7ca1d823ed1d3b49c4f61",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.linux-riscv64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.linux-riscv64/12.14.0",
+      "metadata_sha256": "9f48431214c480c70a1dbfba753b7fe11ad4ff51f5dce133902a6d886011649f",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.linux-s390x",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.linux-s390x/12.14.0",
+      "metadata_sha256": "9f384f31692ee2c5e089654403a8b83a8a07af72ae6616b99d7f489c00a2864c",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.linux-x64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.linux-x64/12.14.0",
+      "metadata_sha256": "e488ef1b819218040fd0c8a096ecf8167b16bdfc334c66e1e0feeddbded8ad1a",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.linux-x64-musl",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.linux-x64-musl/12.14.0",
+      "metadata_sha256": "dda9aa6008734c983c58974944c6c3a67e667f43d3d8352e8365c841364c0d95",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.win32-arm64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.win32-arm64/12.14.0",
+      "metadata_sha256": "517c437537db4da28ef1f971bd7cd79d68717d33a0429bb4a36347a012567566",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@pnpm/exe.win32-x64",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40pnpm%2Fexe.win32-x64/12.14.0",
+      "metadata_sha256": "2dbfd91e560dc228391e52774aba89abd0b3c8e2ccdb0a16f9cf260155802b18",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-android-arm-eabi",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-android-arm-eabi/1.2.14",
+      "metadata_sha256": "3ffc22263e94e52ad3b3b331496eb71572309eb2a4f1336b1758387d733133fb",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-android-arm64",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-android-arm64/1.2.14",
+      "metadata_sha256": "1aa9002016eb9fa46e9f87eb743a02de4096dd09692d997140d43b74f2f2cc77",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-darwin-arm64",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-darwin-arm64/1.2.14",
+      "metadata_sha256": "a2b70de71f0997c348e74f8f18cc49c527a7a635b9cc296dda61261bfb6722dc",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-darwin-x64",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-darwin-x64/1.2.14",
+      "metadata_sha256": "27dcdc58ae58a7a06c484f49015b1fcd6f9620dcd9b1e9043be99f81b607af99",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-freebsd-x64",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-freebsd-x64/1.2.14",
+      "metadata_sha256": "42b24cf5bde0ead3f86e4dd4868aa1aaa24ed24e4f44a95e6560e8993659314e",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-linux-arm-gnueabihf",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-linux-arm-gnueabihf/1.2.14",
+      "metadata_sha256": "53ececd45ab95b2ef76ea879d43c23ae9de1cffd116c33673263abf07501f301",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-linux-arm64-gnu",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-linux-arm64-gnu/1.2.14",
+      "metadata_sha256": "aca7434f4f70e72ae3f919d6be3f06e721c0370acdcb8bc7c5f61fe1c0396a16",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-linux-arm64-musl",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-linux-arm64-musl/1.2.14",
+      "metadata_sha256": "f3952bb807cb6cd08b5ddd5bac8160c08ee87a449f088056fe2893dfbab95433",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-linux-ppc64-gnu",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-linux-ppc64-gnu/1.2.14",
+      "metadata_sha256": "4baded5bfed12cd44f234dadf229257980271051a54d0093157b4735e9cafebe",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-linux-s390x-gnu",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-linux-s390x-gnu/1.2.14",
+      "metadata_sha256": "f7034372cb92483e28aa180945758cffc6e5f51f3ef3f0e788df2242d8ec46e4",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-linux-x64-gnu",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-linux-x64-gnu/1.2.14",
+      "metadata_sha256": "5f26a5ae9dbd316a2267c28cb7debe1ad1812719594e237328fd3acfe3aaa6bd",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-linux-x64-musl",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-linux-x64-musl/1.2.14",
+      "metadata_sha256": "2149fdcb6f7c9266ca40917eeb4441db76e3572d3948a089383ef7503a0cbdfc",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-openharmony-arm64",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-openharmony-arm64/1.2.14",
+      "metadata_sha256": "2fa58eeda1dc679a0736b0338db246ab052654c38198754dfcebcba0ff2e3a72",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-win32-arm64-msvc",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-win32-arm64-msvc/1.2.14",
+      "metadata_sha256": "9db8392cd1c92977c54e249b09ffd429389c3d438c900eb2353171e42bf05184",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-win32-x64-msvc",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/%40rolldown%2Fbinding-win32-x64-msvc/1.2.14",
+      "metadata_sha256": "7a3024e3673e0b54dfe0a353663b6566f2becba85cb256e449b33c612c90078b",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "baseline-browser-mapping",
+      "version": "2.11.29",
+      "license_expression": "Apache-2.0",
+      "source": "https://registry.npmjs.org/baseline-browser-mapping/2.11.29",
+      "metadata_sha256": "d6b015c99fb391d88631df629a68f8a58d322158b92ee703c3736004060225f6",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "caniuse-lite",
+      "version": "1.0.30001816",
+      "license_expression": "CC-BY-4.0",
+      "source": "https://registry.npmjs.org/caniuse-lite/1.0.30001816",
+      "metadata_sha256": "97ad8407af9860649e7adc89f7b39c48750198e97ecb60d24bbf11ee4f4539f2",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "electron-to-chromium",
+      "version": "1.5.458",
+      "license_expression": "ISC",
+      "source": "https://registry.npmjs.org/electron-to-chromium/1.5.458",
+      "metadata_sha256": "156f5c596248f3f8710f96be0d50be7db3be80f365bb7ea62ed8f87b8e4a36ea",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "node-releases",
+      "version": "2.0.59",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/node-releases/2.0.59",
+      "metadata_sha256": "1c4fc827367b22721884215263e84687544e19b7bc3ff9ce013cdc29905ce94f",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "pnpm",
+      "version": "12.14.0",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/pnpm/12.14.0",
+      "metadata_sha256": "3780ebe8b6964fad26806b0dcc2227702da1925290cd26ac31894ae561e00c15",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "react",
+      "version": "19.3.1",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/react/19.3.1",
+      "metadata_sha256": "ecf8c02b9096a7813842d87fae50a707a8809c5c3d0ec6b359ac51d40188ff6f",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "react-dom",
+      "version": "19.3.1",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/react-dom/19.3.1",
+      "metadata_sha256": "2d72d7d33a8b0fea5614e1b415d06470877efa8eebbdf638cee04e5b83c2c7a5",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "rolldown",
+      "version": "1.2.14",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/rolldown/1.2.14",
+      "metadata_sha256": "f5bf35e5d728f440eed99811458b37c48c0d40941b376844c1f56d017bd715b4",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "npm",
+      "name": "zod",
+      "version": "4.6.7",
+      "license_expression": "MIT",
+      "source": "https://registry.npmjs.org/zod/4.6.7",
+      "metadata_sha256": "d6eac84f6c13cbef91acd6ee6b4c1ccbaef774a2f5e7147a0166880ca30ccbbb",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "cachecontrol",
+      "version": "0.14.4",
+      "license_expression": "Apache-2.0",
+      "source": "https://pypi.org/pypi/cachecontrol/0.14.4/json",
+      "metadata_sha256": "03b391e940e2492a8b3e3736975ad77fea36e4df02e22786e8756d572d398a35",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "jinja2",
+      "version": "3.1.6",
+      "license_expression": "BSD-3-Clause",
+      "source": "https://pypi.org/pypi/jinja2/3.1.6/json",
+      "metadata_sha256": "1bc757d7065f3e67d3a49e72ebc731d0774055575732592eede9820c136329cc",
+      "verified_on": "2026-10-20",
+      "license_source": "https://raw.githubusercontent.com/pallets/jinja/15206881c006c79667fe5154fe80c01c65410679/LICENSE.txt",
+      "license_text_sha256": "3b49dcee4105eb37bac10faf1be260408fe85d252b8e9df2e0979fc1e094437b"
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "pygments",
+      "version": "2.21.0",
+      "license_expression": "BSD-2-Clause",
+      "source": "https://pypi.org/pypi/pygments/2.21.0/json",
+      "metadata_sha256": "330104a10adc8a587e3f98f4e207557125ca0c1d489e129334da5acb2b813a03",
+      "verified_on": "2026-10-20"
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "pyyaml",
+      "version": "6.0.3",
+      "license_expression": "MIT",
+      "source": "https://pypi.org/pypi/pyyaml/6.0.3/json",
+      "metadata_sha256": "c3f35597bc2f08cc990c2a5fe57bef6687b3a3d7c61d8b0ba4cc067777eb1def",
+      "verified_on": "2026-10-20"
+    }
+  ]
+}

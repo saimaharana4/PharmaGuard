@@ -1,0 +1,88 @@
+#!/bin/bash
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+apt-get update -qq
+apt-get install -y -qq docker.io python3 curl nginx iptables
+systemctl enable --now docker nginx
+rm -f /etc/nginx/sites-enabled/default
+curl --fail --silent --show-error https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh -o /tmp/pg-ops-repo.sh
+bash /tmp/pg-ops-repo.sh --also-install
+cat > /etc/google-cloud-ops-agent/config.yaml <<'EOF'
+logging:
+  receivers:
+    pg_journal:
+      type: systemd_journald
+    pg_deployment:
+      type: files
+      include_paths: [/opt/pharmaguard/deployment.jsonl]
+  processors:
+    pg_json:
+      type: parse_json
+  service:
+    pipelines:
+      pg_containers:
+        receivers: [pg_journal]
+      pg_releases:
+        receivers: [pg_deployment]
+        processors: [pg_json]
+EOF
+systemctl restart google-cloud-ops-agent
+install -d -m 0700 /opt/pharmaguard
+cat > /opt/pharmaguard/expiry.py <<'EOF'
+import subprocess
+from datetime import UTC, datetime
+if datetime.now(UTC) >= datetime.fromisoformat('${expires_at}'.replace('Z', '+00:00')):
+    subprocess.run(['/sbin/shutdown', '-h', 'now'], check=True)
+    raise SystemExit(1)
+EOF
+cat > /etc/systemd/system/pharmaguard-expiry-guard.service <<'EOF'
+[Unit]
+Description=Prevent application startup after deployment expiry
+Before=docker.service
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/python3 /opt/pharmaguard/expiry.py
+EOF
+install -d /etc/systemd/system/docker.service.d
+cat > /etc/systemd/system/docker.service.d/expiry.conf <<'EOF'
+[Unit]
+Requires=pharmaguard-expiry-guard.service
+After=pharmaguard-expiry-guard.service
+EOF
+printf '%s' '${release_script}' | base64 -d > /opt/pharmaguard/release.py
+chmod 0700 /opt/pharmaguard/release.py
+cat > /etc/systemd/system/pharmaguard-expiry.service <<'EOF'
+[Unit]
+Description=Stop application compute while preserving disk and instance
+[Service]
+Type=oneshot
+ExecStart=/sbin/shutdown -h now
+EOF
+cat > /etc/systemd/system/pharmaguard-expiry.timer <<'EOF'
+[Unit]
+Description=Enforce the configured application deployment expiry
+[Timer]
+OnCalendar=${replace(replace(expires_at, "T", " "), "Z", " UTC")}
+Persistent=true
+[Install]
+WantedBy=timers.target
+EOF
+cat > /etc/systemd/system/pharmaguard.service <<'EOF'
+[Unit]
+Description=Apply last known PharmaGuard immutable release on boot
+After=docker.service network-online.target
+Requires=docker.service
+ConditionPathExists=/opt/pharmaguard/release.json
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+TimeoutStartSec=600
+ExecStart=/usr/bin/python3 /opt/pharmaguard/release.py --restore
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl enable --now pharmaguard-expiry.timer
+systemctl enable pharmaguard.service
+if test -f /opt/pharmaguard/release.json; then systemctl start pharmaguard; fi

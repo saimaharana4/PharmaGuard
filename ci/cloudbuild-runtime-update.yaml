@@ -1,0 +1,12 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: [build, -f, ci/Dockerfile.runtime-update, --build-arg, 'BASE_IMAGE=${_BASE_IMAGE}', -t, '${_REGISTRY}/pharmaguard-api:${_SOURCE_SHA}', .]
+  - name: gcr.io/cloud-builders/docker
+    waitFor: ['-']
+    args: [build, -f, apps/web/Dockerfile, -t, '${_REGISTRY}/pharmaguard-web:${_SOURCE_SHA}', .]
+images:
+  - '${_REGISTRY}/pharmaguard-api:${_SOURCE_SHA}'
+  - '${_REGISTRY}/pharmaguard-web:${_SOURCE_SHA}'
+timeout: 600s
+options:
+  logging: CLOUD_LOGGING_ONLY

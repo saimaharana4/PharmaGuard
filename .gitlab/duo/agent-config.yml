@@ -1,0 +1,11 @@
+# GitLab reads this configuration only from the default branch.
+# Standard hosted image/executor retained so GitLab supplies its supported sandbox.
+# CI runs the authoritative dependency, frontend, integration and full-corpus gates.
+setup_script:
+  - python3 -m venv /tmp/pharmaguard-agent-tools
+  - /tmp/pharmaguard-agent-tools/bin/pip install --no-cache-dir uv==0.11.32
+  - export PATH="/tmp/pharmaguard-agent-tools/bin:$PATH"
+cache:
+  key:
+    files: [uv.lock]
+  paths: [.cache/uv/]

@@ -1,0 +1,93 @@
+# Native analyzers publish their own GitLab schemas and SBOM provenance.
+# Keep branch pipelines authoritative; avoid duplicating every job for an open MR.
+variables:
+  AST_ENABLE_MR_PIPELINES: "false"
+
+sast:
+  stage: secure
+  variables:
+    SEARCH_MAX_DEPTH: 8
+
+.sast-analyzer:
+  allow_failure: false
+  after_script:
+    - if [ -f gl-sast-report.json ]; then cp gl-sast-report.json "gl-${CI_JOB_NAME}-report.json"; fi
+  artifacts:
+    paths: ["gl-*-report.json"]
+
+iac-sast:
+  stage: secure
+  allow_failure: false
+  variables:
+    SEARCH_MAX_DEPTH: 8
+  after_script:
+    - if [ -f gl-sast-report.json ]; then cp gl-sast-report.json gl-iac-report.json; fi
+  artifacts:
+    paths: [gl-iac-report.json]
+
+secret_detection:
+  stage: secure
+  allow_failure: false
+
+license:evidence:
+  extends: .python
+  stage: security_policy
+  needs: [dependency-scanning]
+  script: ["uv run python -m ci.license_evidence"]
+  artifacts:
+    access: developer
+    paths: [.data/license-sboms/]
+    reports:
+      cyclonedx: ".data/license-sboms/**/gl-sbom-*.cdx.json"
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+validate:container-scanner:
+  image: "$CS_ANALYZER_IMAGE$CS_IMAGE_SUFFIX"
+  stage: validate
+  script: ["ruby -c ci/scan_registry.rb"]
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+security:native-policy:
+  image: python:3.12-slim-bookworm
+  stage: security_policy
+  script: ["python -m ci.security_policy . deployment/native-security-summary.json"]
+  artifacts:
+    when: always
+    paths: [deployment/native-security-summary.json]
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+# Scan the three already-built immutable digests. No duplicate builds or registry mirror.
+container_scanning:
+  stage: image_verify
+  needs: ["package:images"]
+  dependencies: null
+  allow_failure: false
+  id_tokens:
+    GCP_ID_TOKEN:
+      aud: https://iam.googleapis.com/${GCP_WIF_PROVIDER}
+  parallel:
+    matrix:
+      - COMPONENT: [api, web, edge]
+  variables:
+    GIT_STRATEGY: fetch
+  script: ["ruby ci/scan_registry.rb"]
+  after_script:
+    - if [ -f gl-container-scanning-report.json ]; then cp gl-container-scanning-report.json "gl-container-${COMPONENT}-report.json"; fi
+  artifacts:
+    paths: ["gl-container-*-report.json", "**/gl-sbom-*.cdx.json"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
+
+security:container-policy:
+  image: python:3.12-slim-bookworm
+  stage: image_policy
+  needs: [container_scanning]
+  script: ["python -m ci.security_policy . deployment/container-security-summary.json --container"]
+  artifacts:
+    when: always
+    paths: [deployment/container-security-summary.json]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'

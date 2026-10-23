@@ -1,0 +1,6 @@
+# Optional source-only rebuild from a verified immutable base using the same lockfile.
+# The standard apps/api/Dockerfile remains the complete fresh-build recipe.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+COPY --chown=app:app apps/api/src /app/apps/api/src
+COPY --chown=app:app evaluation /app/evaluation

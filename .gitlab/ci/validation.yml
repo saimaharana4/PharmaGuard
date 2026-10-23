@@ -1,0 +1,67 @@
+validate:api:
+  extends: .python
+  stage: validate
+  script: ["uv run ruff check .", "uv run ruff format --check ."]
+validate:web:
+  extends: .web
+  stage: validate
+  script: ["pnpm lint", "pnpm typecheck", "pnpm build"]
+unit:api:
+  extends: .python
+  stage: test
+  script: ["uv run pytest -m 'not integration' --junitxml=unit-results.xml --cov=pharmaguard --cov=ingestion --cov=evaluation --cov-report=term --cov-report=xml:coverage.xml"]
+  coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
+  artifacts:
+    when: always
+    reports:
+      junit: unit-results.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+unit:web:
+  extends: .web
+  stage: test
+  script: ["pnpm test", "pnpm exec playwright install --with-deps chromium", "pnpm test:e2e"]
+  artifacts:
+    when: always
+    paths: [apps/web/playwright-report/, apps/web/test-results/, apps/web/unit-test-results/]
+    reports:
+      junit: [apps/web/unit-test-results/vitest-junit.xml, apps/web/test-results/playwright-junit.xml]
+integration:api:
+  extends: .python
+  stage: test
+  services:
+    - name: postgres:15-bookworm
+      alias: postgres
+    - name: qdrant/qdrant:v1.19.0
+      alias: qdrant
+  variables:
+    DB_HOST: postgres
+    # Ephemeral test-service access only; no application or cloud credential.
+    POSTGRES_HOST_AUTH_METHOD: trust
+  script:
+    - uv run python ci/wait_services.py
+    - uv run alembic upgrade head
+    - RUN_INTEGRATION=1 uv run pytest -m integration --junitxml=integration-results.xml
+  artifacts:
+    when: always
+    reports:
+      junit: integration-results.xml
+
+integration:routing:
+  image: docker:28-cli
+  stage: test
+  services:
+    - name: docker:28-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - apk add --no-cache python3 py3-pytest
+  script:
+    - RUN_ROUTING_INTEGRATION=1 python3 -m pytest --confcutdir=tests/routing tests/routing --junitxml=routing-results.xml
+  artifacts:
+    when: always
+    reports:
+      junit: routing-results.xml

@@ -1,0 +1,25 @@
+deploy:staging:
+  extends: .gcp
+  stage: deploy_staging
+  needs: ["package:images", "security:container-policy"]
+  script: ["bash ci/deploy_cloudrun.sh"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && $DEPLOY_TARGET != "vm"'
+  environment:
+    name: staging
+    url: $WEB_URL
+    deployment_tier: staging
+  artifacts:
+    paths: [api-deployment.json, web-deployment.json]
+    reports:
+      dotenv: deployment.env
+postdeploy:smoke:
+  extends: .python
+  stage: postdeploy
+  needs: ["deploy:staging"]
+  script: ["uv run python ci/postdeploy_smoke.py"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true" && $DEPLOY_TARGET != "vm"'
+  artifacts:
+    when: always
+    paths: [postdeploy-report.json]

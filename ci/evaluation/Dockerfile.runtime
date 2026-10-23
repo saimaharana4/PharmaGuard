@@ -1,0 +1,20 @@
+# syntax=docker/dockerfile:1
+FROM python:3.12-slim-bookworm AS prepare
+ENV UV_PROJECT_ENVIRONMENT=/opt/evaluation-venv HF_HOME=/opt/huggingface
+ENV PATH="/opt/evaluation-venv/bin:$PATH" OMP_NUM_THREADS=2 MKL_NUM_THREADS=2
+RUN pip install --no-cache-dir uv==0.11.32
+WORKDIR /opt/input-build
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --extra embeddings --no-install-project
+COPY ingestion/cache_models.py cache_models.py
+COPY apps/api/src/pharmaguard/config.py config.py
+RUN mkdir -p pharmaguard && cp config.py pharmaguard/config.py && python cache_models.py
+ENV HF_HUB_OFFLINE=1
+
+# Keep preparation sources, wheel caches and build tools out of repeated CI pulls.
+FROM python:3.12-slim-bookworm
+COPY --from=prepare /opt/evaluation-venv /opt/evaluation-venv
+COPY --from=prepare /opt/huggingface /opt/huggingface
+COPY --from=prepare /usr/local/bin/uv /usr/local/bin/uv
+ENV UV_PROJECT_ENVIRONMENT=/opt/evaluation-venv HF_HOME=/opt/huggingface
+ENV PATH="/opt/evaluation-venv/bin:$PATH" OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 HF_HUB_OFFLINE=1

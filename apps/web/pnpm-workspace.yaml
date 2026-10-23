@@ -1,0 +1,9 @@
+allowBuilds:
+  unrs-resolver: true
+  sharp: false
+overrides:
+  # The pinned Next lint plugin uses only globSync(pattern, {onlyDirectories: true}).
+  # Remove fast-glob -> micromatch -> braces (GHSA-vfj7-8cjw-p6xm), keeping every lint rule.
+  '@next/eslint-plugin-next@16.4.2>fast-glob': npm:tinyglobby@0.2.17
+  # Ajv consumes parse/serialize/resolve only; use the maintained URI resolver.
+  'ajv@6.15.0>uri-js': npm:fast-uri@4.2.2

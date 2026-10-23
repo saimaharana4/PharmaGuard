@@ -1,0 +1,36 @@
+# syntax=docker/dockerfile:1
+# One-time input preparation. The final image contains public frozen data only.
+FROM python:3.12-slim-bookworm AS python
+FROM postgres:15-bookworm AS prepare
+COPY --from=python /usr/local /usr/local
+ARG SNAPSHOT_URL
+ARG SNAPSHOT_SHA256
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates libexpat1 && rm -rf /var/lib/apt/lists/*
+RUN python3 -m venv /opt/bootstrap && /opt/bootstrap/bin/pip install --no-cache-dir uv==0.11.32
+ENV PATH="/opt/bootstrap/bin:$PATH" UV_PYTHON_DOWNLOADS=never
+WORKDIR /build
+COPY pyproject.toml uv.lock ./
+COPY apps/api/src apps/api/src
+COPY ingestion ingestion
+COPY evaluation evaluation
+COPY migrations migrations
+COPY alembic.ini ./
+COPY config/retrieval.json config/retrieval.json
+RUN uv sync --frozen --no-dev
+ADD ${SNAPSHOT_URL} /opt/frozen/snapshot.zip
+ENV APP_ENV=ci DB_HOST=127.0.0.1 DB_NAME=pharmaguard_test DB_USER=pharmaguard_test
+RUN echo "$SNAPSHOT_SHA256  /opt/frozen/snapshot.zip" | sha256sum --check --status && \
+    install -d -o postgres -g postgres /opt/pharmaguard-db && \
+    gosu postgres initdb -D /opt/pharmaguard-db -U pharmaguard_test --auth=trust && \
+    gosu postgres pg_ctl -D /opt/pharmaguard-db -l /tmp/postgres.log -o '-c listen_addresses=127.0.0.1 -c fsync=off -c synchronous_commit=off -c full_page_writes=off -c dynamic_shared_memory_type=mmap' -w start && \
+    gosu postgres createdb -U pharmaguard_test pharmaguard_test && \
+    uv run --no-sync alembic upgrade head && \
+    uv run --no-sync python -u -m evaluation.prepared --snapshot /opt/frozen/snapshot.zip --sha256 "$SNAPSHOT_SHA256" && \
+    gosu postgres pg_ctl -D /opt/pharmaguard-db -m fast -w stop
+
+FROM postgres:15-bookworm
+ENV PGDATA=/opt/pharmaguard-db
+COPY --from=prepare --chown=postgres:postgres /opt/pharmaguard-db /opt/pharmaguard-db
+# Isolated CI service network only; contains no production role or password.
+RUN echo 'host all all 0.0.0.0/0 trust' >> /opt/pharmaguard-db/pg_hba.conf
+CMD ["postgres", "-c", "listen_addresses=*", "-c", "dynamic_shared_memory_type=mmap"]

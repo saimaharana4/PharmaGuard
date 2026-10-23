@@ -1,0 +1,46 @@
+variables:
+  APP_ENV: ci
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
+  GIT_SHA: "$CI_COMMIT_SHA"
+  POSTGRES_DB: pharmaguard_test
+  POSTGRES_USER: pharmaguard_test
+  # Generated at job startup, then used by both PostgreSQL and the application.
+  DB_NAME: pharmaguard_test
+  DB_USER: pharmaguard_test
+  QDRANT_URL: http://qdrant:6333
+  PNPM_VERSION: "12.14.0"
+.python:
+  image: python:3.12-slim-bookworm
+  before_script:
+    - unset CLOUD_SQL_CONNECTION_NAME
+    - pip install --no-cache-dir uv==0.11.32
+    - uv sync --frozen
+  cache:
+    key:
+      files: [uv.lock]
+    paths: [.cache/uv]
+.web:
+  image: node:24-bookworm-slim
+  before_script:
+    - npm install --global pnpm@$PNPM_VERSION
+    - cd apps/web
+    - pnpm install --frozen-lockfile
+.gcp:
+  image: google/cloud-sdk:slim
+  id_tokens:
+    GCP_ID_TOKEN:
+      aud: https://iam.googleapis.com/${GCP_WIF_PROVIDER}
+  before_script:
+    - source ci/auth_gcp.sh
+    - trap 'rm -rf "$AUTH_DIR"' EXIT
+
+.gcp:python:
+  extends: .gcp
+  before_script:
+    - source ci/auth_gcp.sh
+    - trap 'rm -rf "$AUTH_DIR"' EXIT
+    - apt-get update && apt-get install -y python3-venv
+    - python3 -m venv /tmp/pg-ci-tools
+    - /tmp/pg-ci-tools/bin/pip install uv==0.11.32
+    - export PATH="/tmp/pg-ci-tools/bin:$PATH"
+    - uv sync --frozen

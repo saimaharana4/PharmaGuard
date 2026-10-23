@@ -1,0 +1,5 @@
+{
+  "version": "medcpt-context-rerank-v3",
+  "top_k": 5,
+  "allowed_sources": ["pubmed", "dailymed"]
+}

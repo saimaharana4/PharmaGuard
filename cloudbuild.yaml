@@ -1,0 +1,19 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    id: api
+    args: [build, -f, apps/api/Dockerfile, -t, '${_REGISTRY}/pharmaguard-api:${_SOURCE_SHA}', .]
+  - name: gcr.io/cloud-builders/docker
+    id: web
+    waitFor: ['-']
+    args: [build, -f, apps/web/Dockerfile, -t, '${_REGISTRY}/pharmaguard-web:${_SOURCE_SHA}', .]
+  - name: gcr.io/cloud-builders/docker
+    id: edge
+    waitFor: ['-']
+    args: [build, -f, infra/edge/Dockerfile, -t, '${_REGISTRY}/pharmaguard-edge:${_SOURCE_SHA}', .]
+images:
+  - '${_REGISTRY}/pharmaguard-api:${_SOURCE_SHA}'
+  - '${_REGISTRY}/pharmaguard-web:${_SOURCE_SHA}'
+  - '${_REGISTRY}/pharmaguard-edge:${_SOURCE_SHA}'
+timeout: 1800s
+options:
+  logging: CLOUD_LOGGING_ONLY
